@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV API_TOKEN=${API_TOKEN}
+# DO NOT set API_TOKEN manually here  
+# Railway automatically injects environment variables at runtime
 
 CMD ["python", "main.py"]
