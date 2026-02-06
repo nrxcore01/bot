@@ -1,16 +1,13 @@
-import asyncio
 import os
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram import Bot, Dispatcher, executor, types
 
 API_TOKEN = os.getenv("API_TOKEN")
 
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(bot)
 
-@dp.message(commands=["start"])
-async def start_cmd(message: types.Message):
-
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
     text = (
         "👋 **Welcome to India’s #1 USD Exchange Platform!**\n\n"
         "Welcome to **NRXPAY** — India's most trusted & highest-paying USD exchange service.\n\n"
@@ -26,41 +23,41 @@ async def start_cmd(message: types.Message):
         "👇 Choose an option to continue:"
     )
 
-    kb = InlineKeyboardBuilder()
-    kb.button(text="🚀 Join Platform", url="https://nrxpay.vercel.app/")
-    kb.button(text="📘 Earning Guide", callback_data="guide")
-    kb.button(text="🤝 Join as Agent", callback_data="agent")
-    kb.button(text="❓ FAQs", callback_data="faqs")
-    kb.button(text="🪙 Crypto Exchange", callback_data="crypto")
-    kb.button(text="💬 Support Chat", callback_data="support")
-    kb.adjust(1)
+    keyboard = types.InlineKeyboardMarkup()
+    keyboard.add(types.InlineKeyboardButton("🚀 Join Platform", url="https://nrxpay.vercel.app/"))
+    keyboard.add(types.InlineKeyboardButton("📘 Earning Guide", callback_data="guide"))
+    keyboard.add(types.InlineKeyboardButton("🤝 Join as Agent", callback_data="agent"))
+    keyboard.add(types.InlineKeyboardButton("❓ FAQs", callback_data="faqs"))
+    keyboard.add(types.InlineKeyboardButton("🪙 Crypto Exchange", callback_data="crypto"))
+    keyboard.add(types.InlineKeyboardButton("💬 Support Chat", callback_data="support"))
 
-    await message.answer(text, parse_mode="Markdown", reply_markup=kb.as_markup())
-
-
-@dp.callback_query(lambda c: c.data == "guide")
-async def earning_guide(callback: types.CallbackQuery):
-    await callback.message.answer("📘 *Earning Guide coming soon.*", parse_mode="Markdown")
-
-@dp.callback_query(lambda c: c.data == "agent")
-async def join_agent(callback: types.CallbackQuery):
-    await callback.message.answer("🤝 *Agent program coming soon.*", parse_mode="Markdown")
-
-@dp.callback_query(lambda c: c.data == "faqs")
-async def faqs(callback: types.CallbackQuery):
-    await callback.message.answer("❓ *FAQs coming soon.*", parse_mode="Markdown")
-
-@dp.callback_query(lambda c: c.data == "crypto")
-async def crypto_exchange(callback: types.CallbackQuery):
-    await callback.message.answer("🪙 *Crypto exchange features coming soon.*", parse_mode="Markdown")
-
-@dp.callback_query(lambda c: c.data == "support")
-async def support_chat(callback: types.CallbackQuery):
-    await callback.message.answer("💬 *Support chat coming soon.*", parse_mode="Markdown")
+    await message.answer(text, parse_mode="Markdown", reply_markup=keyboard)
 
 
-async def main():
-    await dp.start_polling(bot)
+@dp.callback_query_handler(lambda c: c.data == 'guide')
+async def guide_callback(call: types.CallbackQuery):
+    await call.message.answer("📘 *Earning Guide coming soon.*", parse_mode="Markdown")
 
 
-asyncio.run(main())
+@dp.callback_query_handler(lambda c: c.data == 'agent')
+async def agent_callback(call: types.CallbackQuery):
+    await call.message.answer("🤝 *Agent program coming soon.*", parse_mode="Markdown")
+
+
+@dp.callback_query_handler(lambda c: c.data == 'faqs')
+async def faqs_callback(call: types.CallbackQuery):
+    await call.message.answer("❓ *FAQs coming soon.*", parse_mode="Markdown")
+
+
+@dp.callback_query_handler(lambda c: c.data == 'crypto')
+async def crypto_callback(call: types.CallbackQuery):
+    await call.message.answer("🪙 *Crypto exchange features coming soon.*", parse_mode="Markdown")
+
+
+@dp.callback_query_handler(lambda c: c.data == 'support')
+async def support_callback(call: types.CallbackQuery):
+    await call.message.answer("💬 *Support chat coming soon.*", parse_mode="Markdown")
+
+
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
