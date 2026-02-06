@@ -1,8 +1,9 @@
 import asyncio
+import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-API_TOKEN = "8352255968:AAEInTCm3REt3uthU1pRsFqzHD6eGYO4-MU"
+API_TOKEN = os.getenv("API_TOKEN")
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
@@ -32,7 +33,6 @@ async def start_cmd(message: types.Message):
     kb.button(text="❓ FAQs", callback_data="faqs")
     kb.button(text="🪙 Crypto Exchange", callback_data="crypto")
     kb.button(text="💬 Support Chat", callback_data="support")
-
     kb.adjust(1)
 
     await message.answer(text, parse_mode="Markdown", reply_markup=kb.as_markup())
@@ -61,5 +61,6 @@ async def support_chat(callback: types.CallbackQuery):
 
 async def main():
     await dp.start_polling(bot)
+
 
 asyncio.run(main())
